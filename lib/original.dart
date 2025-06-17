@@ -12,7 +12,7 @@ class TerminalApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Prithvi - Portfolio',
+      title: '8bitSaiyan',
       theme: ThemeData(
         primaryColor: const Color(0xFF00FF00),
         scaffoldBackgroundColor: Colors.black,
@@ -45,30 +45,27 @@ class _TerminalScreenState extends State<TerminalScreen> {
   // --- Virtual File System ---
   final Map<String, dynamic> _fileSystem = {
     'about_me.txt': '''
-Hello! I'm PRITHVI 👋
+I'm 8bitSaiyan,
 
-I'm a passionate developer who loves creating digital experiences.
-When I'm not coding, you can find me exploring new technologies,
-contributing to open source projects, or sharing knowledge with
-the developer community.
+I've spent years in the background — learning, building, refining.
 
-Tech Stack: Flutter, Dart, JavaScript, Python, React
-Interests: Mobile Development, Web Technologies, UI/UX Design
+No noise. No spotlight. Just consistent work and quiet growth.  
+Every line, every idea, every failure — part of the process.
 
-Feel free to explore my projects and get in touch!
+This isn’t about proving anything.  
+It’s about precision. Discipline. Momentum.
+
+If you're here, explore.  
+Everything else reveals itself through action.
 ''',
     'contact_info.txt': '''
-[+] Email: your.email@example.com
-[+] LinkedIn: linkedin.com/in/yourprofile
-[+] GitHub: github.com/yourusername
+[+] GitHub: https://github.com/8bitSaiyan
 ''',
+    // [+] Email: your.email@example.com
+    // [+] LinkedIn: linkedin.com/in/yourprofile
     'projects': {
-      'project1': {
-        'README.md': 'This is the first cool project.',
-      },
-      'project2': {
-        'README.md': 'This is another awesome project.',
-      }
+      'project1': {'README.md': 'This is the first cool project.'},
+      'project2': {'README.md': 'This is another awesome project.'},
     },
   };
   String _currentPath = '~';
@@ -81,22 +78,19 @@ Feel free to explore my projects and get in touch!
 
   void _startBootSequence() {
     _terminalOutput.add(
-      const Text(
-        r'''
+      const Text(r'''
+
+   ____  __    _ __  _____       _                 
+  ( __ )/ /_  (_) /_/ ___/____ _(_)_  ______ _____ 
+ / __  / __ \/ / __/\__ \/ __ `/ / / / / __ `/ __ \
+/ /_/ / /_/ / / /_ ___/ / /_/ / / /_/ / /_/ / / / /
+\____/_.___/_/\__//____/\__,_/_/\__, /\__,_/_/ /_/ 
+                               /____/              
 
 
-   ___  ___  ____________ ___   ______
-  / _ \/ _ \/  _/_  __/ // / | / /  _/
- / ___/ , _// /  / / / _  /| |/ // /  
-/_/  /_/|_/___/ /_/ /_//_/ |___/___/  
-                                      
- 
-
-Welcome to my interactive terminal portfolio.
+Welcome to my terminal portfolio.
 Type "help" to see a list of available commands.
-''',
-        style: TextStyle(color: Color(0xFF00FF00)),
-      ),
+''', style: TextStyle(color: Color(0xFF00FF00))),
     );
   }
 
@@ -128,8 +122,8 @@ Type "help" to see a list of available commands.
 
     switch (cmd) {
       case 'help':
-        _terminalOutput.add(const Text(
-          '''
+        _terminalOutput.add(
+          const Text('''
 Available Commands:
   ls          - list files and directories
   cat [file]  - display file content
@@ -139,9 +133,8 @@ Available Commands:
   whoami      - display user information
   date        - show the current date and time
   help        - display this help message
-''',
-          style: TextStyle(color: Color(0xFF00DD00)),
-        ));
+''', style: TextStyle(color: Color(0xFF00DD00))),
+        );
         break;
       case 'ls':
         _terminalOutput.add(_buildFileSystemList());
@@ -149,62 +142,73 @@ Available Commands:
       case 'cat':
         if (parts.length > 1) {
           final content = _readFile(parts[1]);
-          _terminalOutput.add(Text(
-            content,
-            style: const TextStyle(color: Color(0xFF00DD00)),
-          ));
+          _terminalOutput.add(
+            Text(content, style: const TextStyle(color: Color(0xFF00DD00))),
+          );
         } else {
-          _terminalOutput.add(const Text(
-            'cat: missing operand',
-            style: TextStyle(color: Colors.red),
-          ));
+          _terminalOutput.add(
+            const Text(
+              'cat: missing operand',
+              style: TextStyle(color: Colors.red),
+            ),
+          );
         }
         break;
       case 'clear':
         _terminalOutput.clear();
         break;
       case 'whoami':
-        _terminalOutput.add(const Text(
-          'user: visitor\nname: Prithvi',
-          style: TextStyle(color: Color(0xFF00DD00)),
-        ));
+        _terminalOutput.add(
+          const Text(
+            'user: visitor\nname: 8bitSaiyan',
+            style: TextStyle(color: Color(0xFF00DD00)),
+          ),
+        );
         break;
       case 'date':
-        _terminalOutput.add(Text(
-          DateTime.now().toString(),
-          style: const TextStyle(color: Color(0xFF00DD00)),
-        ));
+        _terminalOutput.add(
+          Text(
+            DateTime.now().toString(),
+            style: const TextStyle(color: Color(0xFF00DD00)),
+          ),
+        );
         break;
       case 'pwd':
-        _terminalOutput.add(Text(
-          _currentPath,
-          style: const TextStyle(color: Color(0xFF00DD00)),
-        ));
+        _terminalOutput.add(
+          Text(_currentPath, style: const TextStyle(color: Color(0xFF00DD00))),
+        );
         break;
       case 'cd':
       // Basic CD implementation, does not support .. or full paths yet
-        _terminalOutput.add(const Text(
-          'cd: functionality coming soon!',
-          style: TextStyle(color: Colors.yellow),
-        ));
+        _terminalOutput.add(
+          const Text(
+            'cd: functionality coming soon!',
+            style: TextStyle(color: Colors.yellow),
+          ),
+        );
         break;
       case '':
         break; // Do nothing on empty command
       default:
-        _terminalOutput.add(Text(
-          'bash: command not found: $cmd',
-          style: const TextStyle(color: Colors.red),
-        ));
+        _terminalOutput.add(
+          Text(
+            'bash: command not found: $cmd',
+            style: const TextStyle(color: Colors.red),
+          ),
+        );
     }
   }
 
   Widget _buildFileSystemList() {
     // This is a simplified version. A real one would parse _currentPath
-    final items = _fileSystem.keys.map((name) {
+    final items =
+    _fileSystem.keys.map((name) {
       final isDir = _fileSystem[name] is Map;
       return Text(
         name,
-        style: TextStyle(color: isDir ? Colors.blue : const Color(0xFF00DD00)),
+        style: TextStyle(
+          color: isDir ? Colors.blue : const Color(0xFF00DD00),
+        ),
       );
     }).toList();
 
@@ -222,15 +226,17 @@ Available Commands:
     return 'cat: $fileName: No such file or directory';
   }
 
-
   Widget _buildPrompt(String command) {
     return RichText(
       text: TextSpan(
         style: const TextStyle(
-            fontFamily: 'FiraCode', color: Color(0xFF00FF00), fontSize: 16),
+          fontFamily: 'FiraCode',
+          color: Color(0xFF00FF00),
+          fontSize: 16,
+        ),
         children: [
           const TextSpan(
-            text: 'user@prithvi-portfolio:~\$ ',
+            text: 'user@8itSaiyan:~\$ ',
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
           TextSpan(text: command),
@@ -247,7 +253,8 @@ Available Commands:
             _historyIndex--;
             _controller.text = _commandHistory[_historyIndex];
             _controller.selection = TextSelection.fromPosition(
-                TextPosition(offset: _controller.text.length));
+              TextPosition(offset: _controller.text.length),
+            );
           }
         });
       } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
@@ -256,7 +263,8 @@ Available Commands:
             _historyIndex++;
             _controller.text = _commandHistory[_historyIndex];
             _controller.selection = TextSelection.fromPosition(
-                TextPosition(offset: _controller.text.length));
+              TextPosition(offset: _controller.text.length),
+            );
           } else {
             _historyIndex = _commandHistory.length;
             _controller.clear();
@@ -294,7 +302,7 @@ Available Commands:
                             ),
                             children: [
                               TextSpan(
-                                text: 'user@prithvi-portfolio:~\$ ',
+                                text: 'user@8bitSaiyan:~\$ ',
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               ),
                             ],
@@ -308,7 +316,9 @@ Available Commands:
                             onSubmitted: _onCommandSubmitted,
                             cursorColor: const Color(0xFF00FF00),
                             style: const TextStyle(
-                                color: Color(0xFF00FF00), fontSize: 16),
+                              color: Color(0xFF00FF00),
+                              fontSize: 16,
+                            ),
                             decoration: const InputDecoration(
                               border: InputBorder.none,
                               isDense: true,
@@ -357,7 +367,10 @@ class CommandInfoPanel extends StatelessWidget {
 │ date   - current time     │
 └───────────────────────────┘''',
           style: TextStyle(
-              color: Color(0xFF00DD00), fontSize: 14, fontFamily: 'FiraCode'),
+            color: Color(0xFF00DD00),
+            fontSize: 14,
+            fontFamily: 'FiraCode',
+          ),
         ),
       ),
     );
