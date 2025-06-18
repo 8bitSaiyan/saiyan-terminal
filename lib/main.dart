@@ -57,7 +57,6 @@ class _TerminalScreenState extends State<TerminalScreen> {
   }
 
   void _scrollToBottom() {
-    // Use animateTo for a smoother scroll effect
     if (_scrollController.hasClients) {
       _scrollController.animateTo(
         _scrollController.position.maxScrollExtent,
@@ -99,32 +98,40 @@ class _TerminalScreenState extends State<TerminalScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
   }
 
+  void _moveCursorToEnd() {
+    _commandRunner.controller.selection = TextSelection.fromPosition(
+      TextPosition(offset: _commandRunner.controller.text.length),
+    );
+  }
+
   void _handleKeyEvent(KeyEvent event) {
     if (event is! KeyDownEvent) return;
 
     if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-      setState(() {
-        if (_historyIndex > 0) {
+      if (_historyIndex > 0) {
+        setState(() {
           _historyIndex--;
-          _commandRunner.controller.text = _commandHistory[_historyIndex];
-          _commandRunner.controller.selection = TextSelection.fromPosition(
-            TextPosition(offset: _commandRunner.controller.text.length),
-          );
-        }
-      });
+          final previousCommand = _commandHistory[_historyIndex];
+          _commandRunner.controller.text = previousCommand;
+          // FIX: Schedule cursor move to after the build
+          WidgetsBinding.instance.addPostFrameCallback((_) => _moveCursorToEnd());
+        });
+      }
     } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-      setState(() {
-        if (_historyIndex < _commandHistory.length - 1) {
+      if (_historyIndex < _commandHistory.length - 1) {
+        setState(() {
           _historyIndex++;
-          _commandRunner.controller.text = _commandHistory[_historyIndex];
-          _commandRunner.controller.selection = TextSelection.fromPosition(
-            TextPosition(offset: _commandRunner.controller.text.length),
-          );
-        } else {
+          final nextCommand = _commandHistory[_historyIndex];
+          _commandRunner.controller.text = nextCommand;
+          // FIX: Schedule cursor move to after the build
+          WidgetsBinding.instance.addPostFrameCallback((_) => _moveCursorToEnd());
+        });
+      } else {
+        setState(() {
           _historyIndex = _commandHistory.length;
           _commandRunner.controller.clear();
-        }
-      });
+        });
+      }
     }
   }
 
@@ -154,7 +161,6 @@ class _TerminalScreenState extends State<TerminalScreen> {
                       ),
                     );
                   }
-                  // Pass the scroll callback to every terminal line
                   return TerminalLine(
                     output: _terminalOutput[index],
                     onAnimatedOutput: _scrollToBottom,
