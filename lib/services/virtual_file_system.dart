@@ -25,19 +25,27 @@ Everything else reveals itself through action.
 ''',
       'projects': {
         'portfolio_v1': {
-          'README.md': 'The terminal you are using right now. Built with Flutter for Web.',
+          'README.md':
+              'The terminal you are using right now. Built with Flutter for Web.',
         },
         'stealth_runner': {
-          'README.md': 'A 2D infinite runner game with a stealth mechanic. Built with Godot Engine.',
+          'README.md':
+              'A 2D infinite runner game with a stealth mechanic. Built with Godot Engine.',
         },
       },
-    }
+    },
   };
 
   dynamic _resolvePath(String path) {
-    final resolvedPath = path == '~' || path == '~/' ? ['~'] : path.split('/');
-    dynamic current = _structure;
-    for (var part in resolvedPath) {
+    // A more robust resolver
+    if (path == '~') return _structure['~'];
+    // Start from home for paths like '~/projects'
+    final parts =
+        path.startsWith('~/') ? path.substring(2).split('/') : path.split('/');
+    dynamic current = _structure['~'];
+
+    for (var part in parts) {
+      if (part.isEmpty) continue;
       if (current is Map<String, dynamic> && current.containsKey(part)) {
         current = current[part];
       } else {
@@ -60,13 +68,16 @@ Everything else reveals itself through action.
       return const SizedBox.shrink(); // Return empty widget for empty dir
     }
 
-    final items = currentDir.keys.map((name) {
-      final isDir = currentDir[name] is Map;
-      return Text(
-        name,
-        style: TextStyle(color: isDir ? Colors.blueAccent : const Color(0xFF00DD00)),
-      );
-    }).toList();
+    final items =
+        currentDir.keys.map((name) {
+          final isDir = currentDir[name] is Map;
+          return Text(
+            name,
+            style: TextStyle(
+              color: isDir ? Colors.blueAccent : const Color(0xFF00DD00),
+            ),
+          );
+        }).toList();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -76,7 +87,10 @@ Everything else reveals itself through action.
 
   CommandOutput readFile(String fileName) {
     final currentDir = _resolvePath(currentPath);
-    if (currentDir != null && currentDir is Map<String, dynamic> && currentDir.containsKey(fileName) && currentDir[fileName] is String) {
+    if (currentDir != null &&
+        currentDir is Map<String, dynamic> &&
+        currentDir.containsKey(fileName) &&
+        currentDir[fileName] is String) {
       return CommandOutput(
         type: OutputType.widget,
         widgetContent: TypingText(text: currentDir[fileName]),
@@ -89,18 +103,26 @@ Everything else reveals itself through action.
   }
 
   String? changeDirectory(String dirName) {
-    if (dirName == '..') {
-      if (currentPath == '~') return null;
-      var parts = currentPath.split('/');
-      parts.removeLast();
-      currentPath = parts.join('/');
-      if (currentPath.isEmpty) currentPath = '~';
+    // Priority 1: Handle `cd` or `cd ~` to go home. This is the simple logic you wanted.
+    if (dirName == '~') {
+      currentPath = '~';
       return null;
     }
 
-    // THIS IS THE CRITICAL FIX
-    final newPath = (currentPath == '~') ? '~/$dirName' : '$currentPath/$dirName';
+    // Priority 2: Handle `cd ..` to go up one directory
+    if (dirName == '..') {
+      if (currentPath == '~') return null; // Already at root
+      var parts = currentPath.split('/');
+      parts.removeLast();
+      currentPath = parts.join('/');
+      return null;
+    }
 
+    // Priority 3: Handle navigating into a subdirectory
+    final newPath =
+        (currentPath == '~')
+            ? '~/$dirName'
+            : '$currentPath/$dirName';
     final target = _resolvePath(newPath);
 
     if (target is Map<String, dynamic>) {
@@ -115,7 +137,11 @@ Everything else reveals itself through action.
     return _generateTreeRecursive(_structure['~']!, '~');
   }
 
-  String _generateTreeRecursive(Map<String, dynamic> dir, String prefix, [String header = '']) {
+  String _generateTreeRecursive(
+    Map<String, dynamic> dir,
+    String prefix, [
+    String header = '',
+  ]) {
     var buffer = StringBuffer(header);
     var entries = dir.keys.toList();
     for (int i = 0; i < entries.length; i++) {
@@ -124,8 +150,9 @@ Everything else reveals itself through action.
       buffer.write('$prefix${isLast ? '└── ' : '├── '}$key\n');
       var value = dir[key];
       if (value is Map<String, dynamic>) {
-        buffer.write(_generateTreeRecursive(
-            value, '$prefix${isLast ? '    ' : '│   '}'));
+        buffer.write(
+          _generateTreeRecursive(value, '$prefix${isLast ? '    ' : '│   '}'),
+        );
       }
     }
     return buffer.toString();
